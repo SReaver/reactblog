@@ -7,32 +7,39 @@ class FullPost extends Component {
     state = {
         loadedPost: null
     }
+
+    componentDidMount() {
+        console.log(this.props);
+        this.loadData();
+    }
+
     componentDidUpdate() {
-        if (this.props.id) {
-            //console.log('componentDidUpdate fired');
+        this.loadData();
+    }
 
-            if (!this.state.loadedPost || (this.state.loadedPost && this.state.loadedPost.id !== this.props.id)) {
-                //console.log('axios get started');
-
-                axios.get('/posts/' + this.props.id)
+    loadData() {
+        if (this.props.match.params.id) {
+            if (!this.state.loadedPost || (this.state.loadedPost && this.state.loadedPost.id !== +this.props.match.params.id)) {
+                axios.get('/posts/' + this.props.match.params.id)
                     .then(response => {
-                        //console.log('componentDidUpdate response', response);
+                        // console.log(response);
                         this.setState({ loadedPost: response.data });
-                    })
+                    });
             }
         }
     }
-    deletePosthandler = () => {
-        axios.delete('/posts/' + this.props.id)
+
+    deletePostHandler = () => {
+        axios.delete('/posts/' + this.props.match.params.id)
             .then(response => {
                 console.log(response);
-
-            })
+            });
     }
+
     render() {
         let post = <p style={{ textAlign: 'center' }}>Please select a Post!</p>;
-        if (this.props.id) {
-            post = <p style={{ textAlign: 'center' }}>Loading...</p>;
+        if (this.props.match.params.id) {
+            post = <p style={{ textAlign: 'center' }}>Loading...!</p>;
         }
         if (this.state.loadedPost) {
             post = (
@@ -40,7 +47,7 @@ class FullPost extends Component {
                     <h1>{this.state.loadedPost.title}</h1>
                     <p>{this.state.loadedPost.body}</p>
                     <div className="Edit">
-                        <button onClick={this.deletePosthandler} className="Delete">Delete</button>
+                        <button onClick={this.deletePostHandler} className="Delete">Delete</button>
                     </div>
                 </div>
 
